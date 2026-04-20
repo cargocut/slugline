@@ -1,0 +1,3 @@
+(library
+ (name slugline)
+ (public_name slugline))
