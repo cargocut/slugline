@@ -1,0 +1,6 @@
+(library
+ (name slugline_test)
+ (inline_tests)
+ (libraries slugline)
+ (preprocess
+  (pps ppx_expect)))
