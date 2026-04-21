@@ -94,10 +94,17 @@ let handle_unregular_char ~mapping ~share_char ~sep ~unknown buf str i state =
        (* Found, we can handle it as a regular char. *)
        cons_regular_chars ~sep ~unknown buf subst state
      | None ->
-       (* Not found, it is an unknown char. *)
-       cons_unknown ~share_char ~sep buf state)
+       (try
+          let _ = Uchar.to_char uchar in
+          (* Not found, it is an unknown char. *)
+          cons_unknown ~share_char ~sep buf state
+        with
+        | _ ->
+          (* HACK: if the char is not representable,
+             it is maybe an accent. Erg. *)
+          state))
   | exception _ ->
-    (* KLUDGE: Handle exception as an unknown char *)
+    (* KLUDGE: Handle exception as discarding char (eg: for accent) *)
     cons_unknown ~share_char ~sep buf state
 ;;
 

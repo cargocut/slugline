@@ -19,3 +19,8 @@ let%expect_test "from_string" =
   dump "----hello -- - - ! ; world--";
   [%expect {| hello-world |}]
 ;;
+
+let%expect_test "from_string" =
+  dump "Xâvier";
+  [%expect {| Xavier |}]
+;;
