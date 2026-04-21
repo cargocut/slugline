@@ -104,7 +104,7 @@ let handle_unregular_char ~mapping ~share_char ~sep ~unknown buf str i state =
 let from_string
       ?(mapping = Mapping.default_mapping)
       ?(sep = "-")
-      ?(unknown = "=")
+      ?(unknown = "-")
       str
   =
   let share_char =
