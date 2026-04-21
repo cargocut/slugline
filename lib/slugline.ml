@@ -39,7 +39,7 @@ module Mapping = struct
     and ae = [ 198; 230 ] |> for_repr "ae"
     and c = [ 199; 231 ] |> for_repr "c"
     and n = [ 209; 241 ] |> for_repr "n"
-    and y = [ 221; 253; 255 ] |> for_repr "y" in
+    and y = [ 221; 253; 255; 7923 ] |> for_repr "y" in
     from_list'
       Uchar.of_int
       (a @ e @ i @ o @ u @ ae @ c @ n @ y @ [ 223, "b"; 208, "d"; 215, "x" ])

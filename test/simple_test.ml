@@ -24,3 +24,8 @@ let%expect_test "from_string" =
   dump "Xâvier";
   [%expect {| Xavier |}]
 ;;
+
+let%expect_test "from_string" =
+  dump "Xâvier ou Xaviè, où se trouve-t-il ? En ỳeahlòd?";
+  [%expect {| Xavier-ou-Xavie-ou-se-trouve-t-il-En-yeahlod |}]
+;;
