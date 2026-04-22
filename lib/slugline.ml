@@ -25,12 +25,12 @@ module Mapping = struct
 
   let empty = M.empty
   let add key value mapping = M.add key value mapping
-  let from_list list = M.of_list list
 
   let from_list' f =
     List.fold_left (fun map (key, value) -> add (f key) value map) empty
   ;;
 
+  let from_list l = from_list' (fun x -> x) l
   let concat a b = M.union (fun _ _ k -> Some k) a b
   let add = M.add
   let update = M.update
