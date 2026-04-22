@@ -14,7 +14,14 @@ type step =
 module M = Map.Make (Uchar)
 
 module Mapping = struct
-  type t = string M.t
+  type subst =
+    | Char of string
+    | Word of string
+
+  let word s = Word s
+  let char s = Char s
+
+  type t = subst M.t
 
   let empty = M.empty
   let add key value mapping = M.add key value mapping
@@ -24,28 +31,57 @@ module Mapping = struct
     List.fold_left (fun map (key, value) -> add (f key) value map) empty
   ;;
 
-  let for_repr s l = l |> List.map (fun x -> x, s)
+  let concat a b = M.union (fun _ _ k -> Some k) a b
+  let add = M.add
+  let update = M.update
+  let remove = M.remove
+  let map_char s l = l |> List.map (fun x -> x, char s)
 
-  let special_chars_minus =
-    let a =
-      [ 192; 193; 194; 195; 196; 197; 224; 225; 226; 227; 228; 229 ]
-      |> for_repr "a"
-    and e = [ 200; 201; 202; 203; 232; 233; 234; 235 ] |> for_repr "e"
-    and i = [ 204; 205; 206; 207; 236; 237; 238; 239 ] |> for_repr "i"
-    and o =
-      [ 210; 211; 212; 213; 214; 216; 240; 248; 242; 243; 244; 245; 246 ]
-      |> for_repr "o"
-    and u = [ 217; 218; 219; 220; 249; 250; 251; 252 ] |> for_repr "u"
-    and ae = [ 198; 230 ] |> for_repr "ae"
-    and c = [ 199; 231 ] |> for_repr "c"
-    and n = [ 209; 241 ] |> for_repr "n"
-    and y = [ 221; 253; 255; 7923 ] |> for_repr "y" in
-    from_list'
-      Uchar.of_int
-      (a @ e @ i @ o @ u @ ae @ c @ n @ y @ [ 223, "b"; 208, "d"; 215, "x" ])
+  let special_chars =
+    let groups =
+      [ map_char "a" [ 224; 225; 226; 227; 228; 229 ]
+      ; map_char "e" [ 232; 233; 234; 235 ]
+      ; map_char "i" [ 236; 237; 238; 239 ]
+      ; map_char "o" [ 242; 243; 244; 245; 246; 248; 240 ]
+      ; map_char "u" [ 249; 250; 251; 252 ]
+      ; map_char "ae" [ 230 ]
+      ; map_char "c" [ 231 ]
+      ; map_char "n" [ 241 ]
+      ; map_char "y" [ 253; 255; 7923 ]
+      ; map_char "A" [ 192; 193; 194; 195; 196; 197 ]
+      ; map_char "E" [ 200; 201; 202; 203 ]
+      ; map_char "I" [ 204; 205; 206; 207 ]
+      ; map_char "O" [ 210; 211; 212; 213; 214; 216 ]
+      ; map_char "U" [ 217; 218; 219; 220 ]
+      ; map_char "AE" [ 198 ]
+      ; map_char "C" [ 199 ]
+      ; map_char "N" [ 209 ]
+      ; map_char "Y" [ 221 ]
+      ]
+    in
+    let extras =
+      [ 223, char "ss"; 208, char "D"; 240, char "d"; 215, char "x" ]
+    in
+    from_list' Uchar.of_int (List.flatten groups @ extras)
   ;;
 
-  let default_mapping = special_chars_minus
+  let known_chars =
+    concat
+      (from_list'
+         Uchar.of_char
+         [ '+', word "plus"
+         ; '&', word "and"
+         ; '@', word "at"
+         ; '%', word "percent"
+         ; '#', word "sharp"
+         ; '$', word "dollar"
+         ])
+      (from_list'
+         Uchar.of_int
+         [ 8364, word "euro"; 163, word "pound"; 165, word "yen" ])
+  ;;
+
+  let default = concat special_chars known_chars
 end
 
 let cons_regular_chars ~sep ~unknown buf str (is_leading_sequence, state) =
@@ -90,9 +126,15 @@ let handle_unregular_char ~mapping ~share_char ~sep ~unknown buf str i state =
   match String.get_utf_8_uchar str i |> Uchar.utf_decode_uchar with
   | uchar ->
     (match M.find_opt uchar mapping with
-     | Some subst ->
+     | Some (Mapping.Char subst) ->
        (* Found, we can handle it as a regular char. *)
        cons_regular_chars ~sep ~unknown buf subst state
+     | Some (Mapping.Word subst) ->
+       (* Found, we can handle it as a regular char. *)
+       state
+       |> cons_space ~share_char ~unknown buf
+       |> cons_regular_chars ~sep ~unknown buf subst
+       |> cons_space ~share_char ~unknown buf
      | None ->
        (try
           let _ = Uchar.to_char uchar in
@@ -109,7 +151,8 @@ let handle_unregular_char ~mapping ~share_char ~sep ~unknown buf str i state =
 ;;
 
 let from_string
-      ?(mapping = Mapping.default_mapping)
+      ?(lowercase = true)
+      ?(mapping = Mapping.default)
       ?(sep = "-")
       ?(unknown = "-")
       str
@@ -150,7 +193,8 @@ let from_string
       , 0 )
       str
   in
-  Buffer.contents buf
+  let res = Buffer.contents buf in
+  if lowercase then String.lowercase_ascii res else res
 ;;
 
 let to_string x = x

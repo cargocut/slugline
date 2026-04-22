@@ -4,7 +4,8 @@
    SPDX-License-Identifier: BSD-3-Clause *)
 
 val dump
-  :  ?mapping:Slugline.Mapping.t
+  :  ?lowercase:bool
+  -> ?mapping:Slugline.Mapping.t
   -> ?sep:string
   -> ?unknown:string
   -> string

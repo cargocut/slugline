@@ -3,9 +3,9 @@
 
    SPDX-License-Identifier: BSD-3-Clause *)
 
-let dump ?mapping ?sep ?unknown s =
+let dump ?(lowercase = false) ?mapping ?sep ?unknown s =
   s
-  |> Slugline.from_string ?mapping ?sep ?unknown
+  |> Slugline.from_string ~lowercase ?mapping ?sep ?unknown
   |> Slugline.to_string
   |> print_endline
 ;;
