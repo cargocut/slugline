@@ -16,7 +16,10 @@ be sufficient for most use cases. It has largely been imported from
 and is small, with no dependencies, making it easy to use with
 [Js_of_ocaml](https://ocsigen.org/js_of_ocaml/latest/manual/overview)
 and [Mirage](https://mirage.io/). The implementation attempts to
-intelligently merge separators and is fairly configurable.
+intelligently merge separators and is fairly configurable. A more
+ambitious implementation is provided by the [Slug
+package](https://ocaml.org/p/slug/latest).
+
 
 ```ocaml
 # "Hello world, this is a slug héhéhé" 
