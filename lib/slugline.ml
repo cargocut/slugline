@@ -109,7 +109,10 @@ let cons_space ~share_char ~unknown buf (is_leading_sequence, state) =
   | Fresh -> is_leading_sequence, Separator
   | Separator -> is_leading_sequence, Separator
   | Unknown ->
-    let () = if not share_char then Buffer.add_string buf unknown in
+    let () =
+      if (not share_char) && not is_leading_sequence
+      then Buffer.add_string buf unknown
+    in
     is_leading_sequence, Separator
 ;;
 
@@ -118,7 +121,10 @@ let cons_unknown ~share_char ~sep buf (is_leading_sequence, state) =
   | Fresh -> is_leading_sequence, Unknown
   | Unknown -> is_leading_sequence, Unknown
   | Separator ->
-    let () = if not share_char then Buffer.add_string buf sep in
+    let () =
+      if (not share_char) && not is_leading_sequence
+      then Buffer.add_string buf sep
+    in
     is_leading_sequence, Unknown
 ;;
 

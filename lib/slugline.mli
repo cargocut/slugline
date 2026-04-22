@@ -87,6 +87,13 @@ end
 
 (** {1 Conversion} *)
 
+(** [from_string ?lowercase ?mapping ?sep ?unknown subject] converts the
+    string [subject] into a slug. The [lowercase] flag (default
+    [true]) forces the result to be in lowercase. [mapping] allows
+    you to provide your own substitution rules, [sep] is the string
+    used to replace spaces, and [unknown] is the string used to
+    replace unknown characters. If the separators and placeholders
+    are identical, they are merged when they appear consecutively. *)
 val from_string
   :  ?lowercase:bool
   -> ?mapping:Mapping.t
@@ -95,4 +102,5 @@ val from_string
   -> string
   -> t
 
+(** [to_string slug] converts the given slug into a string. *)
 val to_string : t -> string

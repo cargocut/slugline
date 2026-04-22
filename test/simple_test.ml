@@ -147,3 +147,13 @@ let%expect_test "with subst" =
   dump "100% free";
   [%expect {| 100-percent-free |}]
 ;;
+
+let%expect_test "Sharing subst/placeholder" =
+  dump "  !  foo !  !";
+  [%expect {| foo |}]
+;;
+
+let%expect_test "Not Sharing subst/placeholder" =
+  dump ~unknown:"_" "  !  foo !  !";
+  [%expect {| foo-_- |}]
+;;
