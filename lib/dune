@@ -1,3 +1,7 @@
 (library
  (name slugline)
  (public_name slugline))
+
+(mdx
+ (files *.mli)
+ (libraries slugline))

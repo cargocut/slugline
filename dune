@@ -1,0 +1,4 @@
+(mdx
+ (package slugline)
+ (libraries slugline)
+ (files README.md))

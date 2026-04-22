@@ -4,8 +4,8 @@
    SPDX-License-Identifier: BSD-3-Clause *)
 
 (** {b Slugline} is a relatively portable implementation of
-    {{:https://en.wikipedia.org/wiki/Clean_URL#Slug} slug} or {i
-    speaking URLs}, short identifiers used {only} to name URLs (or
+    {{:https://en.wikipedia.org/wiki/Clean_URL#Slug} slug} or {i speaking URLs},
+    short identifiers used {i only} to name URLs (or
     other keys). The implementation closely resembles. *)
 
 (** The goal of this implementation is to be compact and portable, and it
